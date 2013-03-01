@@ -66,6 +66,7 @@ class BaseBidBasket(models.Model):
 
         item = BidItem.objects.filter(bid_basket=self,
                                       lot=lot)
+
         if item.exists():
             bid_basket_item = item[0]
             bid_basket_item.amount = amount
@@ -74,6 +75,7 @@ class BaseBidBasket(models.Model):
             bid_basket_item = BidItem.objects.create(bid_basket=self,
                                                      lot=lot,
                                                      amount=amount)
+            bid_basket_item.save()
         return bid_basket_item
 
     def update_bid(self, bid_basket_item_id, amount):
@@ -158,7 +160,8 @@ class BaseBidItem(models.Model):
         verbose_name_plural = _('Bid items')
 
     def is_locked(self):
-        now = get_current_time()
+        import auction.utils.generic
+        now = auction.utils.generic.get_current_time()
 
         if self.lot.content_object.end_date <= now:
             return True

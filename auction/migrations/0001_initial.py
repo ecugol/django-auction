@@ -30,7 +30,9 @@ class Migration(SchemaMigration):
             ('name', self.gf('django.db.models.fields.CharField')(max_length=255)),
             ('slug', self.gf('django.db.models.fields.SlugField')(max_length=50)),
             ('active', self.gf('django.db.models.fields.BooleanField')(default=False)),
-            ('auction', self.gf('django.db.models.fields.related.ForeignKey')(related_name='lots', to=orm['auction.Auction'])),
+            ('is_biddable', self.gf('django.db.models.fields.BooleanField')(default=False)),
+            ('content_type', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['contenttypes.ContentType'])),
+            ('object_id', self.gf('django.db.models.fields.PositiveIntegerField')()),
             ('date_added', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
             ('last_modified', self.gf('django.db.models.fields.DateTimeField')(auto_now=True, blank=True)),
         ))
@@ -49,8 +51,8 @@ class Migration(SchemaMigration):
         db.create_table('auction_biditem', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('bid_basket', self.gf('django.db.models.fields.related.ForeignKey')(related_name='bids', to=orm['auction.BidBasket'])),
-            ('lot', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auction.Lot'])),
-            ('amount', self.gf('auction.basemodels.CurrencyField')(null=True, max_digits=100, decimal_places=2, blank=True)),
+            ('lot', self.gf('django.db.models.fields.related.ForeignKey')(related_name='bids', to=orm['auction.Lot'])),
+            ('amount', self.gf('auction.models.bases.CurrencyField')(null=True, max_digits=100, decimal_places=2, blank=True)),
         ))
         db.send_create_signal('auction', ['BidItem'])
 
@@ -92,19 +94,21 @@ class Migration(SchemaMigration):
         },
         'auction.biditem': {
             'Meta': {'object_name': 'BidItem'},
-            'amount': ('auction.basemodels.CurrencyField', [], {'null': 'True', 'max_digits': '100', 'decimal_places': '2', 'blank': 'True'}),
+            'amount': ('auction.models.bases.CurrencyField', [], {'null': 'True', 'max_digits': '100', 'decimal_places': '2', 'blank': 'True'}),
             'bid_basket': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'bids'", 'to': "orm['auction.BidBasket']"}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'lot': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auction.Lot']"})
+            'lot': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'bids'", 'to': "orm['auction.Lot']"})
         },
         'auction.lot': {
             'Meta': {'object_name': 'Lot'},
             'active': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'auction': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'lots'", 'to': "orm['auction.Auction']"}),
+            'content_type': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['contenttypes.ContentType']"}),
             'date_added': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'is_biddable': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'last_modified': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
+            'object_id': ('django.db.models.fields.PositiveIntegerField', [], {}),
             'polymorphic_ctype': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'polymorphic_auction.lot_set'", 'null': 'True', 'to': "orm['contenttypes.ContentType']"}),
             'slug': ('django.db.models.fields.SlugField', [], {'max_length': '50'})
         },
