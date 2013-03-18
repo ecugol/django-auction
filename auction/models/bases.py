@@ -151,11 +151,3 @@ class BaseBidItem(models.Model):
         app_label = 'auction'
         verbose_name = _('Bid item')
         verbose_name_plural = _('Bid items')
-
-    def is_locked(self):
-        import auction.utils.generic
-        now = auction.utils.generic.get_current_time()
-
-        if self.lot.content_object.end_date <= now:
-            return True
-        return False
