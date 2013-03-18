@@ -136,6 +136,14 @@ class BaseAuctionLot(PolymorphicModel):
     def __unicode__(self):
         return self.name
 
+    @property
+    def is_locked(self):
+        """
+        This property is meant to be overwritten with your own logic. Bid baskets
+        check this method to find out if a bid can be manipulated.
+        """
+        return False
+
 class BaseBidItem(models.Model):
     """
     This is a holder for total number of bids and a pointer to
@@ -151,3 +159,6 @@ class BaseBidItem(models.Model):
         app_label = 'auction'
         verbose_name = _('Bid item')
         verbose_name_plural = _('Bid items')
+
+    def is_locked(self):
+        return self.lot.is_locked
