@@ -64,19 +64,12 @@ class BaseBidBasket(models.Model):
         except Exception, e:
             amount = Decimal('0')
 
-        item = BidItem.objects.filter(bid_basket=self,
-                                      lot=lot)
-
-        if item.exists():
-            bid_basket_item = item[0]
-            bid_basket_item.amount = amount
-            bid_basket_item.save()
-        else:
-            bid_basket_item = BidItem.objects.create(bid_basket=self,
-                                                     lot=lot,
-                                                     amount=amount)
-            bid_basket_item.save()
-        return bid_basket_item
+        item,created = BidItem.objects.get_or_create(bid_basket=self,
+                                                     lot=lot)
+        if item:
+            item.amount=amount
+            item.save()
+        return item
 
     def update_bid(self, bid_basket_item_id, amount):
         """
