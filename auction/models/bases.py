@@ -65,8 +65,10 @@ class BaseBidBasket(models.Model):
         except Exception, e:
             amount = Decimal('0')
 
+        from auction.models.lot import Lot
         item,created = BidItem.objects.get_or_create(bid_basket=self,
-                                                     lot=lot)
+                                                     content_type=ContentType.objects.get_for_model(Lot),
+                                                     lot_id=lot.pk)
         if item:
             item.amount=amount
             item.save()
@@ -171,7 +173,9 @@ class BaseBidItem(models.Model):
     """
 
     bid_basket = models.ForeignKey(get_model_string("BidBasket"), related_name="%(app_label)s_%(class)s_related")
-    lot = models.ForeignKey(get_model_string("Lot"), related_name="%(app_label)s_%(class)s_related")
+    content_type = models.ForeignKey(ContentType, related_name="%(app_label)s_%(class)s_related")
+    lot_id = models.PositiveIntegerField()
+    lot_object = generic.GenericForeignKey('content_type', 'lot_id')
     amount = CurrencyField(max_digits=100, decimal_places=2, null=True, blank=True)
 
     class Meta:
@@ -182,3 +186,7 @@ class BaseBidItem(models.Model):
 
     def is_locked(self):
         return self.lot.is_locked
+
+    @property
+    def lot(self):
+        return self.lot_object
