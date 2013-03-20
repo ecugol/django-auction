@@ -1,10 +1,8 @@
-from django.db import models
-from django.utils.translation import ugettext_lazy as _
-from auction.models.bases import BaseBidItem
+import importlib
+from django.conf import settings
+from auction.utils.loader import load_class
 
-class BidItem(BaseBidItem):
-    class Meta:
-        abstract = False
-        app_label = 'auction'
-        verbose_name = _('Bid item')
-        verbose_name_plural = _('Bid items')
+AUCTION_BIDITEM_MODEL = getattr(settings, 'AUCTION_BIDITEM_MODEL',
+    'auction.models.defaults.BidItem')
+
+BidItem = load_class(AUCTION_BIDITEM_MODEL, 'AUCTION_BIDITEM_MODEL')

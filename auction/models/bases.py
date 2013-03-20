@@ -7,6 +7,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
 from auction.utils.loader import get_model_string
 from south.modelsinspector import add_introspection_rules
+from django.conf import settings
 
 add_introspection_rules([], ["^auction\.models\.bases\.CurrencyField"])
 
@@ -42,7 +43,7 @@ class BaseBidBasket(models.Model):
     """
     This models functions similarly to a shopping cart, except it expects a logged in user.
     """
-    user = models.OneToOneField(User)
+    user = models.OneToOneField(User, related_name="%(app_label)s_%(class)s_related")
     date_added = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
 
@@ -64,17 +65,12 @@ class BaseBidBasket(models.Model):
         except Exception, e:
             amount = Decimal('0')
 
-        item = BidItem.objects.filter(bid_basket=self,
-                                      lot=lot)
-        if item.exists():
-            bid_basket_item = item[0]
-            bid_basket_item.amount = amount
-            bid_basket_item.save()
-        else:
-            bid_basket_item = BidItem.objects.create(bid_basket=self,
-                                                     lot=lot,
-                                                     amount=amount)
-        return bid_basket_item
+        item,created = BidItem.objects.get_or_create(bid_basket=self,
+                                                     lot=lot)
+        if item:
+            item.amount=amount
+            item.save()
+        return item
 
     def update_bid(self, bid_basket_item_id, amount):
         """
@@ -115,6 +111,21 @@ class BaseBidBasket(models.Model):
                 if not bid.is_locked():
                     bid.delete()
 
+    @property
+    def bids(self):
+        """
+        Used as accessor for abstract related (BaseBidItem.bid_items).
+
+        If you override BaseBidItem and use a label other than "auction"
+        you will also need to set AUCTION_BIDBASKET_BIDS_RELATED_NAME.
+        Example: foo_biditem_related
+                 (where your label is "foo" and your model is "BidItem")
+        """
+        bids = getattr(settings, 'AUCTION_BIDBASKET_BIDS_RELATED_NAME',
+                       'auction_biditem_related')
+        return getattr(self, bids)
+
+    @property
     def total_bids(self):
         """
         Returns total bids in basket.
@@ -141,14 +152,26 @@ class BaseAuctionLot(PolymorphicModel):
     def __unicode__(self):
         return self.name
 
+    @property
+    def is_locked(self):
+        """
+        This property is meant to be overwritten with your own logic. Bid baskets
+        check this method to find out if a bid can be manipulated.
+        """
+        import auction.utils.generic
+        now = auction.utils.generic.get_current_time()
+        if self.content_object.end_date <= now:
+            return True
+        return False
+
 class BaseBidItem(models.Model):
     """
     This is a holder for total number of bids and a pointer to
     item being bid on.
     """
 
-    bid_basket = models.ForeignKey('auction.BidBasket', related_name='bids')
-    lot = models.ForeignKey(get_model_string('Lot'), related_name="bids")
+    bid_basket = models.ForeignKey(get_model_string("BidBasket"), related_name="%(app_label)s_%(class)s_related")
+    lot = models.ForeignKey(get_model_string("Lot"), related_name="%(app_label)s_%(class)s_related")
     amount = CurrencyField(max_digits=100, decimal_places=2, null=True, blank=True)
 
     class Meta:
@@ -158,8 +181,4 @@ class BaseBidItem(models.Model):
         verbose_name_plural = _('Bid items')
 
     def is_locked(self):
-        now = get_current_time()
-
-        if self.lot.content_object.end_date <= now:
-            return True
-        return False
+        return self.lot.is_locked
