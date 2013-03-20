@@ -13,16 +13,16 @@ class AuctionListView(ListView):
     """
     View for displaying auctions.
     """
-    
+
     model = auction.models.Auction
 
 class AuctionView(DetailView):
     """
     View for displaying auction lots.
     """
-    
+
     model = auction.models.Auction
-    
+
     def get_context_data(self, **kwargs):
         context = super(AuctionView, self).get_context_data(**kwargs)
         object_type = ContentType.objects.get_for_model(self.object)
@@ -37,11 +37,11 @@ class LotDetailView(SingleObjectMixin, FormView):
 
     model = auction.models.Lot
     form_class = auction.forms.BidForm
-    
+
     def __init__(self, *args, **kwargs):
         self.success_url = reverse('bids')
         return super(LotDetailView, self).__init__(*args, **kwargs)
-    
+
     def get_context_data(self, **kwargs):
         self.object = self.get_object()
         return super(LotDetailView, self).get_context_data(**kwargs)
@@ -54,17 +54,17 @@ class BidListView(ListView):
     """
     View for displaying bids.
     """
-    
+
     model = auction.models.BidItem
 
 class BidDetailView(DetailView):
     """
     View for display information about a bid.
     """
-    
+
     model = auction.models.BidItem
     action = None
-    
+
     def dispatch(self, request, *args, **kwargs):
         if not self.action:
             return super(BidDetailView, self).dispatch(request, *args, **kwargs)
@@ -72,7 +72,7 @@ class BidDetailView(DetailView):
             handler = getattr(self, self.action, self.http_method_not_allowed)
         else:
             handler = self.http_method_not_allowed
-        
+
         self.request = request
         self.args = args
         self.kwargs = kwargs

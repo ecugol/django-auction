@@ -7,6 +7,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
 from auction.utils.loader import get_model_string
 from south.modelsinspector import add_introspection_rules
+from django.conf import settings
 
 add_introspection_rules([], ["^auction\.models\.bases\.CurrencyField"])
 
@@ -42,7 +43,7 @@ class BaseBidBasket(models.Model):
     """
     This models functions similarly to a shopping cart, except it expects a logged in user.
     """
-    user = models.OneToOneField(User)
+    user = models.OneToOneField(User, related_name="%(app_label)s_%(class)s_related")
     date_added = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
 
@@ -110,6 +111,21 @@ class BaseBidBasket(models.Model):
                 if not bid.is_locked():
                     bid.delete()
 
+    @property
+    def bids(self):
+        """
+        Used as accessor for abstract related (BaseBidItem.bid_items).
+
+        If you override BaseBidItem and use a label other than "auction"
+        you will also need to set AUCTION_BIDBASKET_BIDS_RELATED_NAME.
+        Example: foo_biditem_related
+                 (where your label is "foo" and your model is "BidItem")
+        """
+        bids = getattr(settings, 'AUCTION_BIDBASKET_BIDS_RELATED_NAME',
+                       'auction_biditem_related')
+        return getattr(self, bids)
+
+    @property
     def total_bids(self):
         """
         Returns total bids in basket.
@@ -142,6 +158,10 @@ class BaseAuctionLot(PolymorphicModel):
         This property is meant to be overwritten with your own logic. Bid baskets
         check this method to find out if a bid can be manipulated.
         """
+        import auction.utils.generic
+        now = auction.utils.generic.get_current_time()
+        if self.content_object.end_date <= now:
+            return True
         return False
 
 class BaseBidItem(models.Model):

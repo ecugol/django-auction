@@ -56,7 +56,6 @@ class BaseAuctionModelTests(TestCase, ModelTestMixin):
         'start_date',
         'end_date',
         'active',
-        'total_bids',
         'date_added',
         'last_modified',
         '__unicode__'
@@ -100,7 +99,6 @@ class BaseBidBasketModelTests(TestCase, ModelTestMixin):
         'update_bid',
         'delete_bid',
         'empty',
-        'total_bids',
     ]
     model = auction.models.bases.BaseBidBasket
     app_label = 'auction'
