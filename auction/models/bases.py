@@ -150,8 +150,8 @@ class BaseBidItem(models.Model):
     item being bid on.
     """
 
-    bid_basket = models.ForeignKey('auction.BidBasket', related_name='bids')
-    lot = models.ForeignKey(get_model_string('Lot'), related_name="bids")
+    bid_basket = models.ForeignKey(get_model_string("BidBasket"), related_name="%(app_label)s_%(class)s_related")
+    lot = models.ForeignKey(get_model_string("Lot"), related_name="%(app_label)s_%(class)s_related")
     amount = CurrencyField(max_digits=100, decimal_places=2, null=True, blank=True)
 
     class Meta:
