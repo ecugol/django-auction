@@ -4,8 +4,13 @@ python:
   - "2.6"
   - "2.7"
 
+env:
+  - DJANGO_VERSION=1.4.5
+  - DJANGO_VERSION=1.5.1
+
 # command to install dependencies
 install:
+  - pip install . --use-mirrors
   - pip install -r test_requirements.txt --use-mirrors
 
 # command to run tests
