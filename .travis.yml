@@ -10,6 +10,7 @@ env:
 
 # command to install dependencies
 install:
+  - pip install Django==$DJANGO_VERSION --use-mirrors
   - pip install . --use-mirrors
   - pip install -r test_requirements.txt --use-mirrors
 
