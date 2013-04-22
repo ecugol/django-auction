@@ -23,4 +23,4 @@ class BidForm(forms.Form):
         For simplified extending.
         """
         #return auction.models.Lot.objects.get(pk=lot_id)
-        return Lot.biddable.get(pk=lot_id)
+        return Lot.objects.filter(is_biddable=True).get(pk=lot_id)

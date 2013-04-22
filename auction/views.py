@@ -13,14 +13,14 @@ class AuctionListView(ListView):
     """
     View for displaying auctions.
     """
-
+    template_name = 'auction/auctions.html'
     model = auction.models.Auction
 
 class AuctionView(DetailView):
     """
     View for displaying auction lots.
     """
-
+    template_name = 'auction/lots.html'
     model = auction.models.Auction
 
     def get_context_data(self, **kwargs):
@@ -34,7 +34,7 @@ class LotDetailView(SingleObjectMixin, FormView):
     """
     View for display lot details.
     """
-
+    template_name = 'auction/lot.html'
     model = auction.models.Lot
     form_class = auction.forms.BidForm
 
@@ -54,7 +54,7 @@ class BidListView(ListView):
     """
     View for displaying bids.
     """
-
+    template_name = 'auction/bids.html'
     model = auction.models.BidItem
 
 class BidDetailView(DetailView):

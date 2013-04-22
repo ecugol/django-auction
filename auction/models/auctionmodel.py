@@ -1,11 +1,8 @@
-from django.db import models
-from django.utils.translation import ugettext_lazy as _
+import importlib
+from django.conf import settings
+from auction.utils.loader import load_class
 
-from auction.models.bases import BaseAuction
+AUCTION_AUCTION_MODEL = getattr(settings, 'AUCTION_AUCTION_MODEL',
+                                  'auction.models.defaults.Auction')
 
-class Auction(BaseAuction):
-    class Meta:
-        abstract = False
-        app_label = 'auction'
-        verbose_name = _('Auction')
-        verbose_name_plural = _('Auctions')
+Auction = load_class(AUCTION_AUCTION_MODEL, 'AUCTION_AUCTION_MODEL')
