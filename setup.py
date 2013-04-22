@@ -13,6 +13,14 @@ CLASSIFIERS = [
     'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
 ]
 
+with open(os.path.join(os.path.dirname(__file__), 'requirements.txt')) as f:
+    REQUIREMENTS = f.read().splitlines()
+
+try:
+    import importlib
+except ImportError:
+    REQUIREMENTS.append('importlib')
+
 setup(
     author="Joe Curlee",
     author_email="joe.curlee@gmail.com",
@@ -24,13 +32,7 @@ setup(
     license='BSD License',
     platforms=['OS Independent'],
     classifiers=CLASSIFIERS,
-    install_requires=[
-        'Django>=1.4,<1.6',
-        'South==0.7.6',
-        'django-polymorphic==0.2',
-        'wsgiref==0.1.2',
-        'pytz',
-    ],
+    install_requires=REQUIREMENTS,
     tests_require=[
         'django-nose',
         'coverage',
