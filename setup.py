@@ -19,6 +19,7 @@ with open(os.path.join(os.path.dirname(__file__), 'requirements.txt')) as f:
 try:
     import importlib
 except ImportError:
+    # importlib is not included in python 2.6
     REQUIREMENTS.append('importlib')
 
 setup(
