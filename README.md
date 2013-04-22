@@ -1,4 +1,7 @@
-Django-Auction
+django-auction
 ==============
 
-A Django auction system based on the Django Shop project.
+.. image:: https://travis-ci.org/littlepea/django-auction.png?branch=develop
+    :target: http://travis-ci.org/littlepea/django-auction
+
+A Django auction system.
