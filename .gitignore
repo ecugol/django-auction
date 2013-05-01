@@ -1,5 +1,7 @@
 .idea/
 *.egg-info/
+*/EGG-INFO/*
+*.egg/*
 coverage/
 *.log
 *.pot

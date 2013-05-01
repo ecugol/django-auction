@@ -21,14 +21,14 @@ class CurrencyField(models.DecimalField):
             return None
 
 class BaseAuction(PolymorphicModel):
-    name = models.CharField(max_length=255)
-    slug = models.SlugField(unique=True)
-    start_date = models.DateTimeField()
-    end_date = models.DateTimeField()
-    active = models.BooleanField(default=False)
-    total_bids = models.IntegerField(default=0)
-    date_added = models.DateTimeField(auto_now_add=True)
-    last_modified = models.DateTimeField(auto_now=True)
+    name = models.CharField(max_length=255, verbose_name=_('Auction name'))
+    slug = models.SlugField(unique=True, verbose_name=_('Slug'))
+    start_date = models.DateTimeField(verbose_name=_('Start date'))
+    end_date = models.DateTimeField(verbose_name=_('End date'))
+    active = models.BooleanField(default=False, verbose_name=_('Active'))
+    total_bids = models.IntegerField(default=0, verbose_name=_('Total bids'))
+    date_added = models.DateTimeField(auto_now_add=True, verbose_name=_('Date added'))
+    last_modified = models.DateTimeField(auto_now=True, verbose_name=_('Last modified'))
 
     class Meta:
         abstract = True
@@ -43,9 +43,9 @@ class BaseBidBasket(models.Model):
     """
     This models functions similarly to a shopping cart, except it expects a logged in user.
     """
-    user = models.OneToOneField(User, related_name="%(app_label)s_%(class)s_related")
-    date_added = models.DateTimeField(auto_now_add=True)
-    last_modified = models.DateTimeField(auto_now=True)
+    user = models.OneToOneField(User, related_name="%(app_label)s_%(class)s_related", verbose_name=_('User'))
+    date_added = models.DateTimeField(auto_now_add=True, verbose_name=_('Date added'))
+    last_modified = models.DateTimeField(auto_now=True, verbose_name=_('Last modified'))
 
     class Meta:
         abstract = True
@@ -135,15 +135,16 @@ class BaseBidBasket(models.Model):
         return len(self.bids.all())
 
 class BaseAuctionLot(PolymorphicModel):
-    name = models.CharField(max_length=255)
-    slug = models.SlugField()
-    active = models.BooleanField(default=False)
-    is_biddable = models.BooleanField(default=False)
-    content_type = models.ForeignKey(ContentType)
-    object_id = models.PositiveIntegerField()
+    name = models.CharField(max_length=255, verbose_name=_('Lot name'))
+    slug = models.SlugField(auto_created=True, verbose_name=_('Slug'))
+    active = models.BooleanField(default=False, verbose_name=_('Active'))
+    is_biddable = models.BooleanField(default=False, verbose_name=_('Is biddable?'))
+    content_type = models.ForeignKey(ContentType, related_name="%(app_label)s_%(class)s_lots",
+                                     verbose_name=_('Content type'))
+    object_id = models.PositiveIntegerField(verbose_name=_('Object ID'))
     content_object = generic.GenericForeignKey('content_type', 'object_id')
-    date_added = models.DateTimeField(auto_now_add=True)
-    last_modified = models.DateTimeField(auto_now=True)
+    date_added = models.DateTimeField(auto_now_add=True, verbose_name=_('Date added'))
+    last_modified = models.DateTimeField(auto_now=True, verbose_name=_('Last modified'))
 
     class Meta:
         abstract = True
@@ -172,11 +173,11 @@ class BaseBidItem(models.Model):
     item being bid on.
     """
 
-    bid_basket = models.ForeignKey(get_model_string("BidBasket"), related_name="%(app_label)s_%(class)s_related")
-    content_type = models.ForeignKey(ContentType, related_name="%(app_label)s_%(class)s_related")
-    lot_id = models.PositiveIntegerField()
+    bid_basket = models.ForeignKey(get_model_string("BidBasket"), related_name="%(app_label)s_%(class)s_related", verbose_name=_('Bid basket'))
+    content_type = models.ForeignKey(ContentType, related_name="%(app_label)s_%(class)s_related", verbose_name=_('Content type'))
+    lot_id = models.PositiveIntegerField(verbose_name=_('Lot ID'))
     lot_object = generic.GenericForeignKey('content_type', 'lot_id')
-    amount = CurrencyField(max_digits=100, decimal_places=2, null=True, blank=True)
+    amount = CurrencyField(max_digits=100, decimal_places=2, null=True, blank=True, verbose_name=_('Amount'))
 
     class Meta:
         abstract = True

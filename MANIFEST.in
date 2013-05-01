@@ -1,2 +1,4 @@
-recursive-include auction/templates *
+include *.rst
+include *.txt
+recursive-include auction *
 recursive-exclude * *.pyc
