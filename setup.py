@@ -29,7 +29,7 @@ setup(
     version=auction.__version__,
     description='Based on django-shop, Django Auction aims to allow easy development of auction apps.',
     long_description=open(os.path.join(os.path.dirname(__file__), 'README.rst')).read(),
-    url='http://joecurlee.com/django-auction/',
+    url='https://github.com/littlepea/django-auction/',
     license='BSD License',
     platforms=['OS Independent'],
     classifiers=CLASSIFIERS,
