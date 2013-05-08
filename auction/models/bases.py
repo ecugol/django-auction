@@ -20,6 +20,7 @@ class CurrencyField(models.DecimalField):
         except AttributeError:
             return None
 
+
 class BaseAuction(PolymorphicModel):
     name = models.CharField(max_length=255, verbose_name=_('Auction name'))
     slug = models.SlugField(unique=True, verbose_name=_('Slug'))
@@ -38,6 +39,7 @@ class BaseAuction(PolymorphicModel):
 
     def __unicode__(self):
         return self.name
+
 
 class BaseBidBasket(models.Model):
     """
