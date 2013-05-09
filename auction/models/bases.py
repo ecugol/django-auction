@@ -179,7 +179,7 @@ class BaseBidItem(models.Model):
     content_type = models.ForeignKey(ContentType, related_name="%(app_label)s_%(class)s_related", verbose_name=_('Content type'))
     lot_id = models.PositiveIntegerField(verbose_name=_('Lot ID'))
     lot_object = generic.GenericForeignKey('content_type', 'lot_id')
-    amount = CurrencyField(max_digits=100, decimal_places=2, null=True, blank=True, verbose_name=_('Amount'))
+    amount = CurrencyField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name=_('Amount'))
 
     class Meta:
         abstract = True
