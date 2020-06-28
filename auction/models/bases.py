@@ -165,9 +165,7 @@ class BaseAuctionLot(PolymorphicModel):
         """
         import auction.utils.generic
         now = auction.utils.generic.get_current_time()
-        if self.content_object.end_date <= now:
-            return True
-        return False
+        return self.content_object.end_date <= now
 
 class BaseBidItem(models.Model):
     """
