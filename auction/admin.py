@@ -1,4 +1,4 @@
 from django.contrib import admin
-import models.biditem
+from .models import BidItem
 
-admin.site.register(models.biditem.BidItem)
+admin.site.register(BidItem)
